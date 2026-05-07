@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Ryal FitHub | Pro Engine V10</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+<meta content="#ffffff" name="theme-color"/>
+
+<link href="style.css?v=1" rel="stylesheet"/><link href="manifest.json" rel="manifest"/><meta content="#111111" name="theme-color"/></head>
+<body id="mainBody">
+<div id="cloudLoader"><div class="spinner"></div>Syncing Engine...</div>
+<div id="ryalModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:90000;align-items:center;justify-content:center;">
+<div class="ryal-modal" style="background:var(--card); padding:25px;border-radius:20px;width:85%;max-width:320px;text-align:center;border:1px solid var(--border);box-shadow:0 10px 40px rgba(0,0,0,0.1);">
+<h3 id="modalTitle" style="margin:0 0 10px 0;font-family:'Oswald', sans-serif;color:var(--text);">Notice</h3>
+<p id="modalText" style="font-size:14px;color:var(--text-muted);margin-bottom:25px;">Message</p>
+<div id="modalBtns" style="display:flex;gap:10px;"></div>
+</div>
+</div>
+<div id="menuOverlay" onclick="closeMenu()"></div>
+<div id="sideMenu">
+<div class="menu-header">
+<h3 id="menuTrainerName">Trainer</h3>
+<span class="pro-pill">PRO ACCOUNT</span>
+</div>
+<div class="menu-links">
+<a onclick="showMenuSection('sec-leads')"><i data-feather="user-plus"></i> Trial Pipeline</a>
+<a onclick="showMenuSection('sec-exp')"><i data-feather="credit-card"></i> Business Expenses</a>
+<a onclick="showMenuSection('sec-master-routine')"><i data-feather="layers"></i> Routine Builder</a>
+<a onclick="showMenuSection('sec-library')"><i data-feather="video"></i> Video Library</a>
+<a onclick="showMenuSection('sec-research')"><i data-feather="book-open"></i> Clinical Research</a>
+<a onclick="showMenuSection('sec-endo')"><i data-feather="database"></i> Compound Index AI</a>
+<a onclick="showMenuSection('sec-support')"><i data-feather="life-buoy"></i> Platform Support</a>
+<div style="border-top:1px solid var(--border); margin: 10px 0;"></div>
+<a onclick="editTrainerProfile()"><i data-feather="settings"></i> Profile Settings</a>
+<a onclick="exportData()"><i data-feather="download"></i> Backup Data</a>
+<a onclick="document.getElementById('importFile').click()"><i data-feather="upload"></i> Restore Data</a>
+<input accept=".json" id="importFile" onchange="importData(event)" style="display:none;" type="file"/>
+</div>
+<div class="menu-footer">
+<button class="btn-danger" onclick="ryalSignOut()"><i data-feather="log-out"></i> Logout</button>
+</div>
+</div>
+<div id="authView" style="display:flex; height:100vh; align-items:center; justify-content:center; padding:20px;">
+<div class="auth-card" id="loginBlock" style="background:var(--card); border:1px solid var(--border); padding:35px 25px; border-radius:24px; text-align:center; width:100%; max-width:360px;">
+<div style="width:55px;height:55px;background:var(--primary);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+<i data-feather="cloud" style="color:#fff; width:28px; height:28px;"></i>
+</div>
+<h2 style="color:var(--text);font-family:'Oswald', sans-serif; margin:0 0 5px 0; font-size:28px;">Ryal FitHub <span style="color:var(--primary);">Pro</span></h2>
+<p style="color:var(--text-muted);font-size:13px;margin-bottom:30px;font-weight:500;">The clinical OS for elite trainers.</p>
+<button class="btn-main" onclick="ryalSignIn()"><i data-feather="log-in"></i> Sign in with Google</button>
+</div>
+<div class="auth-card" id="setupBlock" style="display:none;background:var(--card); border:1px solid var(--border); padding:30px; border-radius:24px; width:100%; max-width:380px;">
+<h2 style="color:var(--text);font-family:'Oswald', sans-serif; text-align:center; margin-bottom:20px; font-size:24px;">Workspace Setup</h2>
+<input id="authName" placeholder="Full Name" type="text"/>
+<input disabled="" id="authEmail" style="opacity:0.6; background:rgba(0,0,0,0.02);" type="email"/>
+<div style="display:flex;gap:10px;">
+<input id="authPhone" placeholder="WhatsApp" type="tel"/>
+<input id="authSalary" placeholder="Base Salary (₹)" type="number"/>
+</div>
+<div style="display:flex;gap:10px;">
+<input id="authIn" type="time" value="06:00"/>
+<input id="authOut" type="time" value="14:00"/>
+</div>
+<button class="btn-main" onclick="saveTrainerProfile()" style="margin-top:10px;"><i data-feather="check"></i> Save &amp; Launch</button>
+</div>
+</div>
+<div id="appContainer" style="display:none;">
+<header style="display:flex; justify-content:space-between; align-items:center; padding:15px 0 25px;">
+<button onclick="toggleMenu()" style="background:transparent;border:none;color:var(--text);padding:5px;width:auto;"><i data-feather="menu"></i></button>
+<h1 style="font-size:22px;font-weight:800;margin:0;font-family:'Oswald', sans-serif;">Ryal FitHub</h1>
+<button onclick="toggleTheme()" style="background:transparent;border:none;color:var(--text);padding:5px;width:auto;"><i data-feather="moon"></i></button>
+</header>
+<div class="stats-grid">
+<div class="stat-card"><span class="stat-label"><i data-feather="activity" style="width:12px;color:var(--info);"></i> PT Earn</span><span class="stat-val" id="statPT">₹0</span></div>
+<div class="stat-card"><span class="stat-label"><i data-feather="clock" style="width:12px;color:var(--warning);"></i> Sal Earn</span><span class="stat-val" id="statSal">₹0</span></div>
+<div class="stat-card"><span class="stat-label"><i data-feather="dollar-sign" style="width:12px;color:var(--primary);"></i> Total Earn</span><span class="stat-val" id="statRevenue">₹0</span></div>
+</div>
+<div class="section active" id="sec-rev">
+<h2 onclick="toggleSec('sec-rev')"><span><i data-feather="pie-chart" style="width:16px;color:var(--primary);margin-right:8px;"></i> Revenue Breakdown</span> <i data-feather="chevron-down"></i></h2>
+<div class="collapsible">
+<div style="display:flex; gap:12px; margin-bottom:15px;">
+<input id="reportMonthInput" style="margin-bottom:0;" type="month"/>
+<button class="btn-pdf" onclick="generateMonthlyReportPDF()" style="margin:0;"><i data-feather="printer"></i> Print Report</button>
+</div>
+<div id="revView"></div>
+</div>
+</div>
+<div class="section active" id="sec-prof">
+<h2 onclick="toggleSec('sec-prof')"><span><i data-feather="user-check" style="width:16px;color:var(--info);margin-right:8px;"></i> Client Setup</span> <i data-feather="chevron-down"></i></h2>
+<div class="collapsible">
+<input id="regName" placeholder="Full Name" type="text"/>
+<input id="regGoal" placeholder="Main Goal" type="text"/>
+<div style="display:flex; gap:12px;">
+<input id="regReceipt" placeholder="Receipt No." type="text"/>
+<input id="regPhone" placeholder="Contact No." type="tel"/>
+</div>
+<div style="display:flex; gap:12px;">
+<select id="regGender"><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select>
+<input id="regProf" placeholder="Profession" type="text"/>
+</div>
+<div style="display:flex; gap:12px;">
+<input id="regAge" placeholder="Age" type="number"/>
+<input id="regHeight" placeholder="Height (cm)" type="number"/>
+</div>
+<div style="display:flex; gap:12px;">
+<input id="regSlot" type="time"/>
+<input id="regMed" placeholder="Injuries/Medical" type="text"/>
+</div>
+<div style="display:flex; gap:12px;">
+<select id="regLevel"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+<input id="regStart" type="date"/>
+</div>
+<div style="display:flex; gap:12px;">
+<input id="regPrevSess" placeholder="Prev. Sessions Done" type="number"/>
+<input id="regEnd" type="date"/>
+<input id="regSess" placeholder="Total Sessions" type="number"/>
+</div>
+<div style="display:flex; gap:12px;">
+<input id="regPay" placeholder="Package ₹" type="number"/>
+<select id="regRet"><option value="0.40">40%</option><option value="0.45">45%</option><option value="0.50">50%</option><option value="1">100%</option></select>
+</div>
+<select id="regGst"><option value="0">0% GST</option><option value="0.05">5% GST</option><option value="0.18">18% GST</option></select>
+<button class="btn-main" onclick="regClient()"><i data-feather="user-plus"></i> Create Profile</button>
+</div>
+</div>
+<div class="section active" id="sec-rost">
+<h2 onclick="toggleSec('sec-rost')"><span><i data-feather="clipboard" style="width:16px;color:var(--info);margin-right:8px;"></i> Active Roster</span> <i data-feather="chevron-down"></i></h2>
+<div class="collapsible" id="rosterViewContainer"></div>
+</div>
+<div class="section active" id="sec-plan">
+<h2 onclick="toggleSec('sec-plan')"><span><i data-feather="calendar" style="width:16px;color:var(--warning);margin-right:8px;"></i> Session Planner</span> <i data-feather="chevron-down"></i></h2>
+<div class="collapsible">
+<div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg); padding:12px 15px; border-radius:12px; margin-bottom:15px; border:1px solid var(--border);">
+<span style="font-size:11px;font-weight:800;color:var(--text-muted);text-transform:uppercase;">Est. Upcoming Value</span>
+<span id="planEarnings" style="font-weight:800;color:var(--primary);font-size:18px;font-family:'Oswald', sans-serif;">₹0</span>
+</div>
+<select id="planClient"></select>
+<div style="display:flex; gap:12px;">
+<input id="planDate" type="date"/>
+<input id="planTime" type="time"/>
+</div>
+<input id="planWorkout" placeholder="Planned Workout / Focus" type="text"/>
+<button class="btn-sub" onclick="addPlan()" style="width:100%; border-color:var(--info); color:var(--info);"><i data-feather="plus"></i> Schedule Session</button>
+<div id="planList" style="margin-top:15px;"></div>
+</div>
+</div>
+<div class="section active" id="sec-att">
+<h2 onclick="toggleSec('sec-att')"><span><i data-feather="check-square" style="width:16px;color:var(--info);margin-right:8px;"></i> My Attendance</span> <i data-feather="chevron-down"></i></h2>
+<div class="collapsible">
+<div style="display:flex; gap:12px;">
+<input id="attDate" onchange="window.render()" type="date"/>
+<input id="attIn" type="time"/>
+<input id="attOut" type="time"/>
+</div>
+<div style="display:flex; gap:10px;">
+<button class="btn-main" onclick="logAtt('Present')">Present</button>
+<button class="btn-sub" onclick="logAtt('Week Off')" style="border-color:var(--info); color:var(--info);">Week Off</button>
+<button class="btn-danger" onclick="logAtt('Absent')" style="flex:0.5;"><i data-feather="x"></i></button>
+</div>
+<div class="history-pane" id="attList" style="max-height:180px; overflow-y:auto; margin-top:15px;"></div>
+</div>
+</div>
+<div class="section" id="sec-leads" style="display:none; border-top:4px solid var(--info);">
+<h2><span><i data-feather="users" style="width:16px;color:var(--info);margin-right:8px;"></i> Trial Pipeline</span></h2>
+<div class="collapsible" style="display:block;">
+<div style="display:flex; gap:12px;">
+<input id="leadName" placeholder="Lead Name" type="text"/>
+<input id="leadContact" placeholder="Contact No." type="tel"/>
+</div>
+<button class="btn-sub" onclick="addLead()" style="width:100%; border-color:var(--info); color:var(--info);"><i data-feather="user-plus"></i> Add New Lead</button>
+<div id="leadsList" style="margin-top:20px;"></div>
+</div>
+</div>
+<div class="section" id="sec-exp" style="display:none; border-top:4px solid var(--danger);">
+<h2><span><i data-feather="credit-card" style="width:16px;color:var(--danger);margin-right:8px;"></i> Business Expenses</span></h2>
+<div class="collapsible" style="display:block;">
+<div style="display:flex; gap:12px;">
+<input id="expDate" type="date"/>
+<select id="expCat"><option>Gym Rent</option><option>Supplements</option><option>Marketing</option><option>Software</option><option>Other</option></select>
+</div>
+<div style="display:flex; gap:12px;">
+<input id="expDesc" placeholder="Description e.g. Meta Ads" type="text"/>
+<input id="expAmt" placeholder="Amt ₹" type="number"/>
+</div>
+<button class="btn-sub" onclick="addExpense()" style="width:100%; border-color:var(--danger); color:var(--danger);"><i data-feather="minus-circle"></i> Log Expense</button>
+<div id="expList" style="margin-top:20px;"></div>
+</div>
+</div>
+<div class="section" id="sec-master-routine" style="display:none;">
+<h2 onclick="toggleSec('sec-master-routine')"><span><i data-feather="layers" style="width:16px;color:var(--warning);margin-right:8px;"></i> Master Routine Builder</span> <i data-feather="chevron-down"></i></h2>
+<div class="collapsible" style="display:block;">
+<input id="newSplitName" list="existingSplits" placeholder="Split Name" type="text"/><datalist id="existingSplits"></datalist>
+<div style="display:flex; gap:12px;">
+<input id="newSplitEx" placeholder="Exercise to Add" type="text"/>
+<button class="btn-main" onclick="addExerciseToSplit()">Add</button>
+</div>
+<div class="history-pane" id="splitManagerList" style="max-height:250px;overflow-y:auto;"></div>
+</div>
+</div>
+<div class="section" id="sec-library" style="display:none;">
+<h2 onclick="toggleSec('sec-library')"><span><i data-feather="video" style="width:16px;color:var(--primary);margin-right:8px;"></i> Video Library</span> <i data-feather="chevron-down"></i></h2>
+<div class="collapsible" style="display:block;">
+<div style="display:flex; gap:12px;">
+<input id="libExName" placeholder="Exercise Name" type="text"/>
+<input id="libExMuscle" placeholder="Target Muscle" type="text"/>
+</div>
+<input id="libExVideo" placeholder="YouTube Link" type="url"/>
+<button class="btn-main" onclick="addLibraryVideo()">Save to Database</button>
+<div class="history-pane" id="libraryList"></div>
+</div>
+</div>
+<div class="section" id="sec-research" style="display:none;">
+<h2 onclick="toggleSec('sec-research')"><span><i data-feather="book-open" style="width:16px;color:var(--info);margin-right:8px;"></i> Clinical Research</span> <i data-feather="chevron-down"></i></h2>
+<div class="collapsible" style="display:block;">
+<div style="display:flex; gap:12px;">
+<input id="resTitle" placeholder="Article Title" type="text"/>
+<select id="resCat"><option>Nutrition</option><option>Biomechanics</option><option>Mindset</option><option>Protocol</option></select>
+</div>
+<textarea id="resContent" placeholder="Write content..." rows="5"></textarea>
+<button class="btn-main" onclick="addResearchArticle()">Publish</button>
+<div class="history-pane" id="researchList"></div>
+</div>
+</div>
+<div class="section" id="sec-endo" style="display:none; border-top:4px solid var(--danger);">
+<h2><span><i data-feather="database" style="width:16px;color:var(--danger);margin-right:8px;"></i> Compound Index</span></h2>
+<div class="collapsible" style="display:block;">
+<input id="endoCompoundSearch" placeholder="Compound Name" type="text"/>
+<button class="btn-danger" id="endoAiBtn" onclick="runEndoAI()"><i data-feather="search"></i> Fetch Profile</button>
+<div id="endoAiResult" style="display:none; margin-top:15px; padding:15px; background:var(--bg); border:1px solid var(--danger); border-radius:12px; font-size:13px; line-height:1.6;"></div>
+</div>
+</div>
+<div class="section" id="sec-support" style="display:none;">
+<h2 onclick="toggleSec('sec-support')"><span><i data-feather="life-buoy" style="width:16px;color:var(--info);margin-right:8px;"></i> Platform Support</span> <i data-feather="chevron-down"></i></h2>
+<div class="collapsible" style="display:block;">
+<input id="supportSubject" placeholder="Subject" type="text"/>
+<textarea id="supportMsg" placeholder="Message..." rows="4"></textarea>
+<button class="btn-info" onclick="sendSupportTicket()">Send Message</button>
+</div>
+</div>
+<footer style="text-align:center; padding:30px 10px; font-size:11px; color:var(--text-muted); font-weight:800; letter-spacing:1px;">
+<i data-feather="cloud" style="width:14px;color:var(--primary);"></i> CLOUD SYNCED  •  RYAL FITHUB PRO
+    </footer>
+</div>
+<div id="clientOverlay">
+<button class="btn-sub" onclick="document.getElementById('clientOverlay').style.display='none'" style="margin-bottom:20px; border-radius:20px; width:auto; display:inline-flex; background:var(--card);"><i data-feather="arrow-left"></i> Dashboard</button>
+<div style="display:flex; gap:12px;">
+<button class="btn-info" onclick="sendWaReminder()" style="background:#10b981; border:none;"><i data-feather="bell"></i> Reminder</button>
+<button class="btn-pdf" onclick="generateProgressPDF()"><i data-feather="file-text"></i> Print Report</button>
+</div>
+<div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0 8px 0;">
+<div style="display:flex; align-items:center; gap:12px;">
+<h1 id="ovName" style="margin:0;font-size:28px;font-family:'Oswald', sans-serif;">Name</h1>
+<button onclick="openAIChat()" style="background:var(--text); color:var(--card); border:none; border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; padding:0; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+<i data-feather="message-circle" style="width:18px;"></i>
+</button>
+</div>
+<div style="position:relative;">
+<button onclick="document.getElementById('clientMenu').style.display = document.getElementById('clientMenu').style.display === 'block' ? 'none' : 'block'" style="background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);width:auto;padding:8px;"><i data-feather="more-vertical"></i></button>
+<div id="clientMenu" style="display:none; position:absolute; right:0; top:45px; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:10px; z-index:100; width:180px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+<button class="btn-sub" onclick="showEditForm()" style="border:none;text-align:left;margin-bottom:5px;width:100%;justify-content:flex-start;"><i data-feather="edit-2"></i> Edit Profile</button>
+<button class="btn-sub" onclick="generateVIPLink()" style="border:none;text-align:left;color:var(--info);margin-bottom:5px;width:100%;justify-content:flex-start;"><i data-feather="link"></i> Copy VIP Link</button>
+<button class="btn-danger" onclick="deleteCurrentClient()" style="width:100%;"><i data-feather="trash-2"></i> Delete Client</button>
+</div>
+</div>
+</div>
+<p id="ovTags" style="font-size:13px; color:var(--text-muted); font-weight:700; margin:0 0 8px 0; text-transform:uppercase; letter-spacing:0.5px;"></p>
+<p style="font-size:13px; font-weight:800; margin:0 0 15px 0;">Goal: <span id="ovGoalText" style="color:var(--primary);"></span></p>
+<div class="section" id="ovEditForm" style="display:none; border-top:4px solid var(--info);">
+<h2 style="color:var(--info);margin-bottom:15px;"><i data-feather="settings"></i> Edit Details</h2>
+<input id="editName" placeholder="Full Name" type="text"/><input id="editGoal" placeholder="Main Goal" type="text"/>
+<div style="display:flex;gap:12px;"><select id="editGender"><option>Male</option><option>Female</option><option>Other</option></select><input id="editPhone" placeholder="Phone" type="tel"/></div>
+<div style="display:flex;gap:12px;"><input id="editSlot" type="time"/><input id="editAge" placeholder="Age" type="number"/></div>
+<div style="display:flex;gap:12px;"><input id="editHeight" placeholder="Height" type="number"/><input id="editReceipt" placeholder="Receipt" type="text"/></div>
+<div style="display:flex;gap:12px;"><input id="editPrevSess" placeholder="Prev. Sessions Done" type="number"/><input id="editSess" placeholder="Total Sessions" type="number"/><input id="editEnd" type="date"/></div>
+<input id="editMed" placeholder="Injuries" type="text"/>
+<div style="display:flex;gap:12px;"><button class="btn-info" onclick="saveClientEdit()">Save</button><button class="btn-sub" onclick="document.getElementById('ovEditForm').style.display='none'">Cancel</button></div>
+</div>
+<div class="section active">
+<h2><span><i data-feather="activity" style="color:var(--info);margin-right:8px;"></i> InBody &amp; Nutrition Desk</span></h2>
+<input id="bcaDate" style="width:auto; margin-bottom:15px; margin-top:15px;" type="date"/>
+<div style="display:flex; gap:10px;">
+<input id="inWeight" placeholder="Weight" step="0.1" type="number"/>
+<input id="inSmm" placeholder="SMM" step="0.1" type="number"/>
+<input id="inPbf" placeholder="PBF%" step="0.1" type="number"/>
+</div>
+<div style="display:flex; gap:10px;">
+<input id="inVisFat" placeholder="Visceral" type="number"/>
+<input id="inBmr" placeholder="BMR" type="number"/>
+</div>
+<div style="display:flex; gap:10px;">
+<input id="inBmi" placeholder="BMI" step="0.1" type="number"/>
+<input id="inScore" placeholder="Score" type="number"/>
+</div>
+<div style="display:flex; gap:12px; margin-top:10px;">
+<button class="btn-sub" onclick="saveBca()" style="border-color:var(--info); color:var(--info); flex:1;">Log Data</button>
+<button class="btn-main" onclick="generateSmartPlan()" style="flex:2;">Calculate Macros</button>
+</div>
+<div class="history-pane" id="bcaHistory" style="max-height:180px;overflow-y:auto;display:none;"></div>
+<div style="margin-top:25px; border-top:1px dashed var(--border); padding-top:20px;">
+<div id="mealStatsArea"></div>
+<div id="mealListArea" style="margin:10px 0;"></div>
+<select id="mbCat"><option>Meal 1 (Breakfast)</option><option>Meal 2 (Mid-Morning)</option><option>Meal 3 (Lunch)</option><option>Meal 4 (Snacks)</option><option>Meal 5 (Dinner)</option><option>Meal 6 (Late Snack)</option></select>
+<div style="display:flex; gap:8px;">
+<input id="mbName" placeholder="Food item..." style="flex:2;margin-bottom:0;" type="text"/>
+<input id="mbQty" placeholder="Amt" style="flex:1;margin-bottom:0;" type="number" value="100"/>
+<select id="mbUnit" style="flex:1;margin-bottom:0;"><option value="g">Grams</option><option value="qty">Qty</option></select>
+<button class="btn-info" id="btnFetchMacro" onclick="fetchMacros()" style="flex:1;padding:12px;margin-bottom:0;border-radius:12px;"><i data-feather="download-cloud" style="margin:0;"></i></button>
+</div>
+<div style="display:flex; gap:8px; margin-top:10px;">
+<input id="mbP" placeholder="Pro (g)" type="number"/>
+<input id="mbC" placeholder="Carb (g)" type="number"/>
+<input id="mbF" placeholder="Fat (g)" type="number"/>
+</div>
+<button class="btn-sub" onclick="addMeal()" style="width:100%; border-color:var(--text); color:var(--text);"><i data-feather="plus-circle"></i> Add Food to Plan</button>
+</div>
+</div>
+<div class="section active" style="border-top:4px solid #8b5cf6;">
+<h2><span><i data-feather="cpu" style="color:#8b5cf6;margin-right:8px;"></i> AI Plateau Analyst</span></h2>
+<div style="margin-top:15px;">
+<button class="btn-main" onclick="runPlateauAI()" style="background:rgba(139,92,246,0.1);color:#8b5cf6;border:1px solid #8b5cf6;box-shadow:none;"><i data-feather="zap"></i> Analyze Progress</button>
+<div id="aiThinking" style="display:none; margin-top:15px; color:var(--text-muted); font-size:12px; text-align:center;"><i data-feather="loader" style="animation:spin 1s linear infinite;"></i> Processing...</div>
+<div id="aiResultText" style="display:none; margin-top:15px; background:var(--bg); padding:15px; border-radius:12px; font-size:13px; line-height:1.6; border:1px solid #8b5cf6;"></div>
+</div>
+</div>
+<div class="section active" style="border-top:4px solid #10b981;">
+<h2><span><i data-feather="wind" style="color:#10b981;margin-right:8px;"></i> Flexibility &amp; Mobility</span></h2>
+<div style="margin-top:15px;">
+<div style="display:flex; gap:10px;"><input id="mobDate" type="date"/><input id="mobMuscle" list="mobMuscleList" placeholder="Target Muscle" type="text"/><datalist id="mobMuscleList"><option value="Hamstrings"><option value="Hips"><option value="Shoulders"><option value="Lower Back"></option></option></option></option></datalist></div>
+<div style="display:flex; gap:8px;"><input id="aiMobilityInput" placeholder="AI: Joint (e.g. Tight Hips)" style="flex:2;margin-bottom:0;" type="text"/><button class="btn-main" id="aiMobGenerateBtn" onclick="generateAIMobility(false)" style="background:#10b981;color:white;flex:1;margin-bottom:0;padding:10px;">Get</button><button class="btn-sub" id="aiMobRefreshBtn" onclick="generateAIMobility(true)" style="color:#10b981;border-color:#10b981;margin-bottom:0;padding:10px;"><i data-feather="refresh-cw" style="margin:0;"></i></button></div>
+<div id="mobTagsContainer" style="display:flex; flex-wrap:wrap; gap:10px; margin:15px 0;"></div>
+<div style="display:flex; gap:10px;"><input id="mobExercise" placeholder="Stretch" style="flex:2;" type="text"/><input id="mobTime" placeholder="Secs" type="number"/><input id="mobSets" placeholder="Sets" type="number"/></div>
+<button class="btn-sub" onclick="saveMobility()" style="width:100%; border-color:#10b981; color:#10b981;">Log Mobility</button>
+<div class="history-pane" id="mobList" style="display:none;"></div>
+</div>
+</div>
+<div class="section active" style="border-top:4px solid var(--danger);">
+<h2><span><i data-feather="heart" style="color:var(--danger);margin-right:8px;"></i> Endurance &amp; Cardio</span></h2>
+<div style="margin-top:15px;">
+<div style="display:flex; gap:10px;"><input id="cardioDate" type="date"/><select id="cardioType"><option>Run</option><option>Treadmill</option><option>Cycle</option><option>Row</option><option>Swim</option></select></div>
+<div style="display:flex; gap:10px;"><input id="cardioDist" placeholder="Dist (km)" step="0.1" type="number"/><input id="cardioTime" placeholder="Mins" type="number"/><input id="cardioHr" placeholder="Avg HR" type="number"/></div>
+<button class="btn-sub" onclick="saveCardio()" style="width:100%; border-color:var(--danger); color:var(--danger);">Log Cardio</button>
+<div class="history-pane" id="cardioList" style="display:none;"></div>
+</div>
+</div>
+<div class="section active">
+<h2><span><i data-feather="image" style="color:var(--info);margin-right:8px;"></i> Physique Timeline</span></h2>
+<div style="margin-top:15px;">
+<input id="gallerySearchDate" onchange="searchGalleryByDate(this.value)" style="margin-bottom:15px;" type="date"/>
+<div style="position:relative; margin-bottom:15px;">
+<input accept="image/*" id="galleryUpload" onchange="uploadToGallery(event)" style="opacity:0;position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;z-index:10;" type="file"/>
+<button class="btn-sub" style="width:100%;border-style:dashed;background:var(--bg);"><i data-feather="camera"></i> Upload Progress Photo</button>
+</div>
+<div class="gallery-grid" id="galleryGrid"></div>
+</div>
+</div>
+<div class="section active">
+<h2><span><i data-feather="zap" style="color:var(--warning);margin-right:8px;"></i> Record Workout</span></h2>
+<div style="margin-top:15px;">
+<input id="logDate" type="date"/>
+<input id="logWorkoutName" placeholder="Workout Name (e.g. Push Day)" type="text"/>
+<input id="splitSelect" list="muscleDataList" oninput="loadSplit(this.value)" placeholder="Select Muscle Group" type="text"/>
+<datalist id="muscleDataList"></datalist>
+<div style="display:flex; gap:8px;">
+<input id="aiWorkoutInput" placeholder="AI: Goal (e.g. Chest)" style="flex:2;margin-bottom:0;border-color:#8b5cf6;" type="text"/>
+<button class="btn-main" id="aiGenerateBtn" onclick="generateAIExercises(false)" style="background:#8b5cf6;color:white;flex:1;margin-bottom:0;padding:10px;">Get</button>
+<button class="btn-sub" id="aiRefreshBtn" onclick="generateAIExercises(true)" style="color:#8b5cf6;border-color:#8b5cf6;margin-bottom:0;padding:10px;"><i data-feather="refresh-cw" style="margin:0;"></i></button>
+</div>
+<div id="exTagsContainer" style="display:flex; flex-wrap:wrap; gap:10px; margin:15px 0;"></div>
+<div style="position:relative;"><i data-feather="search" style="position:absolute;left:14px;top:14px;color:var(--text-muted);width:16px;"></i><input id="exSearch" oninput="searchEx(this.value)" placeholder="Search manually..." style="padding-left:40px;" type="text"/></div>
+<div id="searchRes" style="background:var(--card);display:none;max-height:150px;overflow-y:auto;border-radius:12px;margin-bottom:12px;position:relative;z-index:20; border:1px solid var(--border);"></div>
+<div id="setForm" style="display:none; background:var(--bg); padding:15px; border-radius:14px; border:1px solid var(--primary-dark); margin-top:15px;">
+<b id="curEx" style="font-size:16px;display:block;margin-bottom:12px;color:var(--text);">Selected</b>
+<div style="display:flex;gap:12px;margin-bottom:15px;">
+<input id="numSets" max="10" min="1" oninput="generateSetInputs()" style="margin-bottom:0; background:var(--card);" type="number" value="3"/>
+<div style="display:flex;gap:8px;">
+<button class="btn-sub" onclick="startRestTimer(90)" style="margin:0; background:var(--card);">90s</button>
+<button class="btn-sub" onclick="startRestTimer(120)" style="margin:0; background:var(--card);">120s</button>
+</div>
+</div>
+<div id="setInputsContainer"></div>
+<button class="btn-main" onclick="saveExercise()" style="margin-top:15px;"><i data-feather="save"></i> Log Sets</button>
+</div>
+<div style="background:var(--card); border-radius:12px; padding:15px; margin-top:15px; border:1px solid var(--border);">
+<div id="tonnageNoData" style="text-align:center; padding:10px; color:var(--text-muted); font-size:12px;">No volume data logged.</div>
+<canvas height="150" id="tonnageChart" style="display:none;"></canvas>
+</div>
+</div>
+</div>
+<div class="section active">
+<h2 onclick="toggleSec('sec-workout-hist')"><span><i data-feather="clock" style="color:var(--info);margin-right:8px;"></i> Workout History</span> <i data-feather="chevron-down"></i></h2>
+<div class="collapsible" id="clientWorkoutHistoryPane" style="display:block;"></div>
+</div>
+</div>
+<div id="aiAssistantOverlay">
+<div class="chat-container">
+<div class="chat-header">
+<b style="font-size:15px; display:flex; align-items:center; gap:8px; color:var(--text); font-family:'Oswald', sans-serif;"><i data-feather="cpu" style="color:var(--ai-glow);"></i> Sam (AI Co-Pilot)</b>
+<button class="close-chat-btn" onclick="closeAIChat()"><i data-feather="x" style="width:20px; height:20px;"></i></button>
+</div>
+<div class="chat-messages" id="chatMessages"></div>
+<div class="chat-input-area">
+<input id="aiChatInput" placeholder="Ask Sam anything..." style="margin-bottom:0; flex:1;" type="text"/>
+<button class="btn-main" onclick="sendAiChatMessage()" style="width:auto; padding:12px 18px; margin-bottom:0; background:var(--ai-glow); color:white;"><i data-feather="send" style="margin:0;"></i></button>
+</div>
+</div>
+</div>
+<div id="restTimerUI"><i data-feather="clock"></i> <span id="timerText">01:30</span><button onclick="stopRestTimer()" style="background:none;border:none;color:var(--danger);display:flex;cursor:pointer;"><i data-feather="x-circle" style="margin:0;"></i></button></div>
+<div id="vipPortal" style="display:none;background:var(--bg);color:var(--text);min-height:100vh;padding:40px 20px;">
+<div class="auth-card" id="vipLoginBox" style="margin-top:10vh;background:var(--card);border:1px solid var(--border); padding:30px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,0.05); max-width:400px; margin-left:auto; margin-right:auto;">
+<h2 style="font-family:'Oswald', sans-serif; text-align:center; margin-bottom:20px; font-size:28px;">Client Portal</h2>
+<input id="vipIdInput" placeholder="Enter VIP ID" style="text-align:center;font-weight:bold;letter-spacing:1px; font-size:18px;" type="text"/>
+<button class="btn-main" onclick="loginVIP()"><i data-feather="unlock"></i> Access Portal</button>
+</div>
+<div id="vipDashboard" style="display:none;max-width:600px;margin:0 auto; padding-bottom:40px;">
+<div style="text-align:center;margin-bottom:25px;">
+<h1 id="vipLiveName" style="font-size:36px;margin:0;font-family:'Oswald', sans-serif;letter-spacing:-1px;"></h1>
+<div id="vipLiveTrainer" style="font-size:11px;color:var(--text-muted);font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-top:5px;"></div>
+</div>
+<div class="stats-grid" style="margin-bottom:25px;">
+<div class="stat-card"><span class="stat-label">Sessions</span><span class="stat-val" id="vipStatSess">0</span></div>
+<div class="stat-card"><span class="stat-label">Current Wt</span><span class="stat-val" id="vipStatWt">-</span></div>
+<div class="stat-card"><span class="stat-label">Body Fat</span><span class="stat-val" id="vipStatFat">-</span></div>
+</div>
+<div class="section" style="border-top:4px solid var(--warning);">
+<h3 style="font-size:12px;margin:0 0 15px 0;text-transform:uppercase;color:var(--text);"><i data-feather="calendar" style="color:var(--warning);margin-right:8px;"></i> Upcoming Sessions</h3>
+<div id="vipUpcomingList"></div>
+</div>
+<div class="section" style="border-top:4px solid var(--info);">
+<h3 style="font-size:12px;margin:0 0 15px 0;text-transform:uppercase;color:var(--text);"><i data-feather="activity" style="color:var(--info);margin-right:8px;"></i> Body Composition</h3>
+<canvas height="150" id="vipBcaChart" style="margin-bottom:15px;"></canvas>
+<div id="vipBcaList" style="max-height:150px; overflow-y:auto;"></div>
+</div>
+<div class="section" style="border-top:4px solid var(--primary-dark);">
+<h3 style="font-size:12px;margin:0 0 15px 0;text-transform:uppercase;color:var(--text);"><i data-feather="bar-chart-2" style="color:var(--primary-dark);margin-right:8px;"></i> Total Volume Lifted</h3>
+<canvas height="150" id="vipVolumeChart"></canvas>
+</div>
+<div class="section" style="border-top:4px solid var(--primary-dark);">
+<h3 style="font-size:12px;margin:0 0 15px 0;text-transform:uppercase;color:var(--text);"><i data-feather="image" style="color:var(--primary-dark);margin-right:8px;"></i> Physique Timeline</h3>
+<div class="gallery-grid" id="vipGalleryGrid"></div>
+</div>
+<div class="section" style="border-top:4px solid var(--danger);">
+<h3 style="font-size:12px;margin:0 0 15px 0;text-transform:uppercase;color:var(--text);"><i data-feather="check-circle" style="color:var(--danger);margin-right:8px;"></i> Workout History</h3>
+<div id="vipPrevious"></div>
+</div>
+<div class="section" style="border-top:4px solid #10b981;">
+<h3 style="font-size:12px;margin:0 0 15px 0;text-transform:uppercase;color:var(--text);"><i data-feather="book-open" style="color:#10b981;margin-right:8px;"></i> Clinical Hub</h3>
+<div id="vipResearchDocs"></div>
+</div>
+<div class="section" style="border-top:4px solid var(--text-muted);">
+<h3 style="font-size:12px;margin:0 0 15px 0;text-transform:uppercase;color:var(--text);"><i data-feather="video" style="color:var(--text-muted);margin-right:8px;"></i> Exercise Library</h3>
+<input id="vipSearchLib" oninput="searchVipLibrary(this.value)" placeholder="Search exercise videos..." style="margin-bottom:10px;" type="text"/>
+<div id="vipLibResults" style="max-height:200px;overflow-y:auto;"></div>
+</div>
+<footer style="text-align:center; padding:20px 10px; font-size:11px; color:var(--text-muted); font-weight:800; letter-spacing:1px; border-top:1px dashed var(--border); margin-top:20px;">
+<i data-feather="shield" style="width:14px;color:var(--info);"></i> POWERED BY RYAL FITHUB PRO
+        </footer>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="app.js?v=1"></script></body>
+</html>
