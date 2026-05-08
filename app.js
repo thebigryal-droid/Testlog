@@ -11,8 +11,11 @@
     // Pull the key from the browser's local memory
 window.RYAL_AI_KEY = localStorage.getItem("ryal_ai_secret_key");
 
-// If the key isn't saved yet, ask for it and save it
-if (!window.RYAL_AI_KEY) {
+// Check if the current URL is a VIP portal link
+const isVipLink = new URLSearchParams(window.location.search).get('vip');
+
+// ONLY prompt for the key if the key is missing AND it is NOT a VIP client
+if (!window.RYAL_AI_KEY && !isVipLink) {
     window.RYAL_AI_KEY = prompt("Enter your Gemini API Key for this device:");
     if (window.RYAL_AI_KEY) {
         localStorage.setItem("ryal_ai_secret_key", window.RYAL_AI_KEY);
