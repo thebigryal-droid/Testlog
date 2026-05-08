@@ -8,8 +8,16 @@
     // ==========================================
     window.RYAL_USDA_KEY = "rB7nbYA6O8O2Pi6WPAfgFBEwgvIdjF0Vz2mrvLTI";
     
-    // Remember to paste your fresh Gemini key here!
-    window.RYAL_AI_KEY = "AIzaSyB8V6IdIZiv6Rd417RinDb7E6yw8JXfrPI"; 
+    // Pull the key from the browser's local memory
+window.RYAL_AI_KEY = localStorage.getItem("ryal_ai_secret_key");
+
+// If the key isn't saved yet, ask for it and save it
+if (!window.RYAL_AI_KEY) {
+    window.RYAL_AI_KEY = prompt("Enter your Gemini API Key for this device:");
+    if (window.RYAL_AI_KEY) {
+        localStorage.setItem("ryal_ai_secret_key", window.RYAL_AI_KEY);
+    }
+}
 
     window.onerror = function(msg, url, line) { 
         console.error("RyalFit Error: " + msg + " at line " + line); 
@@ -189,6 +197,14 @@
         hours = hours ? hours : 12; 
         return `${hours}:${m} ${ampm}`; 
     };
+
+    
+window.closeModalSafe = () => {
+    const modal = document.getElementById('ryalModalOverlay');
+    if(modal){
+        modal.style.display = 'none';
+    }
+};
 
     // ==========================================
     // 3. MASTER RENDER ENGINE (Anti-Lag RequestAnimation Layer)
@@ -984,16 +1000,16 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: `Act as a clinical sports pharmacologist. Provide a detailed, objective clinical profile for ${compound}. Discuss half-life, pros, risks, dosages. HTML tags (<b>, <br>, <ul>, <li>) only. No markdown.` }] }] }) 
             }, 10000); 
             
-            const data = await response.json(); 
-            if (data.error) throw new Error(); 
-            
-            resBox.innerHTML = `<b style="color:var(--danger);font-size:16px;font-family:'Oswald'; letter-spacing:0.5px;">${compound.toUpperCase()}</b><br><br>` + data.candidates[0].content.parts[0].text; 
-            resBox.style.display = 'block'; 
-        } catch(e) { 
-            window.showAlert("AI Timeout. Endocrine profile could not be loaded."); 
-        } finally { 
-            btn.innerHTML = old; window.updateIcons(); 
-        } 
+                    const data = await response.json(); 
+        if (!response.ok) throw new Error(data.error ? data.error.message : "Server Error");
+        if (data.error) throw new Error(data.error.message); 
+        
+        resBox.innerHTML = `<b style="color:var(--danger);font-size:16px;font-family:'Oswald'; letter-spacing:0.5px;">${compound.toUpperCase()}</b><br><br>` + data.candidates[0].content.parts[0].text; 
+        resBox.style.display = 'block'; 
+    } catch(e) { 
+        window.showAlert("AI Error: " + e.message); 
+    } 
+
     };
 
     // ==========================================
@@ -1367,7 +1383,7 @@ window.addEventListener('online', () => {
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./service-worker.js')
-        .catch(err => console.log('SW failed', err));
+            .catch(err => console.log('SW failed', err));
     });
 }
 
